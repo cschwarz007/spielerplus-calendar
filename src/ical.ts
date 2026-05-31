@@ -36,10 +36,19 @@ export function generateICal(
     const startSource = startMode === "meet" ? event.meetTime || event.startTime : event.startTime;
     const start = parseDateTime(event.date, startSource);
     const end = parseDateTime(event.date, event.endTime);
+	console.log(`[ical] Event ${event.title} has end date ${end}`);
 
     if (!start) continue;
+	
+	const summaryParts = [event.title]
+	if (event.response === "") {
+		summaryParts.push("ANTWORT OFFEN")
+	}
+	else
+	{
+		summaryParts.push(event.response)
+	}	
 
-    const summaryParts = [event.title];
     if (event.subtitle) summaryParts.push(event.subtitle);
 
     const descriptionParts: string[] = [];
