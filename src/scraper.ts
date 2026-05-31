@@ -127,6 +127,7 @@ function parseEventsFromHtml(html: string, yearHint: number): Omit<CalendarEvent
     const title = $(el).find(".panel-heading-text .panel-title").text().trim();
     const subtitle = $(el).find(".panel-heading-text .panel-subtitle").text().trim();
     const dateStr = $(el).find(".panel-heading-info .panel-subtitle").text().trim(); // "DD.MM"
+	const response = $(el).find(".participation-button.selected").attr("title") || "";
 
     // Parse times
     let meetTime: string | null = null;
@@ -142,7 +143,8 @@ function parseEventsFromHtml(html: string, yearHint: number): Omit<CalendarEvent
         else if (label === "Beginn") startTime = value || null;
         else if (label === "Ende") endTime = value || null;
       });
-
+	
+	if (meetTime == "-:-")  meetTime = startTime;
     const info = $(el).find(".event-info").text().trim();
 
     // Build URL from link
@@ -155,7 +157,7 @@ function parseEventsFromHtml(html: string, yearHint: number): Omit<CalendarEvent
     const dateISO = `${yearHint}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 
     const description = [subtitle, info].filter(Boolean).join(" - ");
-
+	
     events.push({
       id: eventId,
       type,
@@ -165,8 +167,9 @@ function parseEventsFromHtml(html: string, yearHint: number): Omit<CalendarEvent
       date: dateISO,
       meetTime,
       startTime,
-      endTime,
+      endTime,	  
       url,
+	  response,
     });
   });
 
@@ -177,13 +180,14 @@ function parseEventDetailsFromHtml(html: string): EventDetails {
   const $ = cheerio.load(html);
 
   const addressHeading = $("h4").filter((_i, el) => $(el).text().trim() === "Adresse");
-  let address: string | null = null;
+  let address: string | null = null;  
   if (addressHeading.length > 0) {
     const container = addressHeading.parent();
     const addressText = container
       .contents()
       .filter((_i, el) => el !== addressHeading[0])
-      .text()
+	  .html()
+	  .replace(/<br>/gi," | ").replace(/(<([^>]+)>)/gi, "")
       .trim();
     address = addressText || null;
   }
