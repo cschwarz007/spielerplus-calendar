@@ -145,6 +145,7 @@ function parseEventsFromHtml(html: string, yearHint: number): Omit<CalendarEvent
       });
 	
 	if (meetTime == "-:-")  meetTime = startTime;
+	if (endTime == "-:-")  endTime = null;
     const info = $(el).find(".event-info").text().trim();
 
     // Build URL from link
