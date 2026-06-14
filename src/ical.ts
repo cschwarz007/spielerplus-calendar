@@ -40,15 +40,12 @@ export function generateICal(
 
     if (!start) continue;
 	
-	const summaryParts = [event.title]
+	// const summaryParts = [event.title]
+	const summaryParts = [event.response.toUpperCase()]
 	if (event.response === "") {
-		summaryParts.push("ANTWORT OFFEN")
+		summaryParts = ["ANTWORT OFFEN"]
 	}
-	else
-	{
-		summaryParts.push(event.response)
-	}	
-
+	summaryParts.push(event.title)
     if (event.subtitle) summaryParts.push(event.subtitle);
 
     const descriptionParts: string[] = [];
